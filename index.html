@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ES6 Proxy</title>
+</head>
+<body>
+  <h1>ES6 Proxy</h1>
+
+  <script>
+    // revocable
+    const { proxy, revoke } = Proxy.revocable({}, {
+      get(target, name) {
+        return `[[${ name }]]`;
+      },
+    });
+
+    console.log(proxy.foo);
+    // [[foo]]
+
+    // run revoke
+    revoke();
+
+    try {
+      console.log(proxy.foo);
+    } catch(e) {
+      console.error(e);
+      // Uncaught TypeError: Cannot perform 'get' on a proxy that has been revoked
+    }
+    
+    try {
+      proxy.foo = 1;
+    } catch(e) {
+      console.error(e);
+      // Uncaught TypeError: Cannot perform 'set' on a proxy that has been revoked
+    }
+
+    try {
+      delete proxy.foo;
+    } catch(e) {
+      console.error(e);
+      // Uncaught TypeError: Cannot perform 'deleteProperty' on a proxy that has been revoked
+    }
+
+    try {
+      console.log(typeof proxy.foo);
+    } catch(e) {
+      console.error(e);
+      // Uncaught TypeError: Cannot perform 'get' on a proxy that has been revoked
+    }
+
+  </script>
+</body>
+</html>
