@@ -118,5 +118,34 @@
     console.log(p111.a, p111.b, p111.c, p111.d);
     // 233 undefined null 1
   </script>
+
+  <script>
+    console.log('=================proxy set 方法==================');
+
+    const p2 = new Proxy({}, {
+      set(target, property, value, receiver) {
+        // target: 目标对象
+        // property: 将被设置的属性名或Symbol
+        // value: 属性新的值
+        // receiver: 最初被调用的对象。通常是proxy本身，但handler的set方法也有可能在原型链上，
+        // 或以其他方式被间接地调用
+        // @return 返回一个布尔值 返回 true 表示成功，严格模式下返回 false 会抛出一个 TypeError 异常
+      },
+    });
+
+    const obj2 = {};
+    const p22 = new Proxy(obj2, {
+      set(target, property, value, receiver) {
+        target[property] = value;
+        console.log('property set: %s = %s', property, value);
+        return true;
+      },
+    });
+
+    p22.a = 10;
+    console.log('a' in p22, 'a' in obj2); // true true
+    console.log(p22.a, obj2.a);           // 10 10
+
+  </script>
 </body>
 </html>
