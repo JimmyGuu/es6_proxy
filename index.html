@@ -50,5 +50,73 @@
     }
 
   </script>
+
+  <script>
+
+    console.log('=================proxy get 方法==================');
+
+    // 语法
+    const p1 = new Proxy({}, {
+      get(target, property, receiver) {
+        // target: 目标对象
+        // property: 被获取的属性名
+        // receiver: Proxy或者继承Proxy的对象
+        console.log('called: %s', property);
+        if (property === 'a') return 1;
+        else return 2;
+      },
+    });
+
+    console.log(p1.a); // 1
+    console.log(p1.b); // 2
+
+
+    console.log('==============proxy get 方法约束===============');
+
+    // 约束
+    const obj1 = {};
+    Object.defineProperty(obj1, "a", {
+      configurable: false, // 不可配置(对象的属性不可被删除，以及除 value 和 writable 特性外的其他特性不可被修改。)
+      enumerable: false,   // 不可枚举
+      value: 10,
+      writable: false,     // 不可写
+    });
+
+    delete obj1.a;
+    console.log(obj1.a); // 10
+    console.log(Object.keys(obj1)); // []
+    obj1.a = 20;
+    console.log(obj1.a); // 10
+    
+    const p11 = new Proxy(obj1, {
+      get(target, property) {
+        return 20;
+      },
+    });
+
+    try {
+      console.log(p11.a);
+    } catch(e) {
+      console.error(e);
+      // TypeError: 'get' on proxy: property 'a' is a read-only 
+      // and non-configurable data property on the proxy target 
+      // but the proxy did not return its actual value (expected '10' but got '20')
+    }
+
+
+    // 用法
+    const p111 = new Proxy({}, {
+      get(target, property) {
+        return property in target ? target[property] : 1;
+      },
+    });
+
+    p111.a = 233;
+    p111.b = undefined;
+    p111.c = null;
+
+    console.log(p111.a, p111.b, p111.c, p111.d);
+    // 233 undefined null 1
+  </script>
 </body>
 </html>
